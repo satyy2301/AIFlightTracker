@@ -63,6 +63,9 @@ GET /api/flights?origin=SYD&destination=MEL&date=2023-07-25
 
 ![Search Page](screenshots/search.png)
 ![Results Page](screenshots/results.png)
+![Insights Page](screenshots/insights.png)
+![Actionable Insights Page](screenshots/actionableinsights.png)
+![DetailedResults Page](screenshots/results2.png)
 
 ## Limitations
 
