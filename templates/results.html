@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .insight-card {
+        border-left: 4px solid #4e79a7;
+        transition: all 0.3s ease;
+    }
+    .insight-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .insight-section {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .insight-header {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .chart-container {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .stat-card {
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-success text-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="h4 mb-0"><i class="bi bi-graph-up me-2"></i>Flight Analysis Dashboard</h2>
+                    <a href="/" class="btn btn-sm btn-light">
+                        <i class="bi bi-arrow-left me-1"></i>New Search
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Route Summary -->
+                <div class="alert alert-primary d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                    <div>
+                        <h4 class="alert-heading h5 mb-1">Analysis for {{ origin }} → {{ destination }}</h4>
+                        <p class="mb-0">Date: <strong>{{ date }}</strong> | {{ flights|length }} flights found</p>
+                    </div>
+                </div>
+
+                {% if flights %}
+                <!-- Key Metrics Row -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h5 class="text-muted mb-2"><i class="bi bi-clock me-2"></i>Peak Hour</h5>
+                            <h3 class="mb-0">{{ visualizations.peak_hour }}:00</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h5 class="text-muted mb-2"><i class="bi bi-airplane me-2"></i>Top Airline</h5>
+                            <h3 class="mb-0">{{ visualizations.top_airline }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h5 class="text-muted mb-2"><i class="bi bi-check-circle me-2"></i>On-Time Rate</h5>
+                            <h3 class="mb-0">{{ visualizations.on_time_rate }}%</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualizations -->
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h5 class="mb-3"><i class="bi bi-bar-chart me-2"></i>Flights by Departure Hour</h5>
+                            <img src="data:image/png;base64,{{ visualizations.hourly_flights }}" 
+                                 class="img-fluid rounded" alt="Hourly Flights">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h5 class="mb-3"><i class="bi bi-pie-chart me-2"></i>Flight Status</h5>
+                            <img src="data:image/png;base64,{{ visualizations.status_distribution }}" 
+                                 class="img-fluid rounded" alt="Status Distribution">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights -->
+                <div class="insight-section">
+                    <div class="insight-header">
+                        <h4 class="h5 mb-0"><i class="bi bi-lightbulb me-2"></i>Advanced Flight Analysis</h4>
+                    </div>
+                    
+                    <!-- Overview Card -->
+                    <div class="card insight-card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary"><i class="bi bi-clipboard-data me-2"></i>Route Overview</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                                            <i class="bi bi-airplane text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0 small text-muted">Total Flights</p>
+                                            <h4 class="mb-0">{{ insights.overview.total_flights }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                                            <i class="bi bi-clock text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0 small text-muted">Operating Hours</p>
+                                            <h4 class="mb-0">{{ insights.overview.time_period }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                                            <i class="bi bi-speedometer2 text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0 small text-muted">Demand Level</p>
+                                            <h4 class="mb-0 text-capitalize">{{ insights.overview.demand_level }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if insights.overview.duration_analysis %}
+                            <div class="alert alert-light mt-3 mb-0">
+                                <i class="bi bi-info-circle me-2"></i>{{ insights.overview.duration_analysis }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="card insight-card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary"><i class="bi bi-graph-up me-2"></i>Performance Metrics</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <h6 class="text-muted">On-Time Performance</h6>
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-success" 
+                                                role="progressbar" 
+                                                style="width: {{ insights.performance_metrics.on_time_performance * 100 }}%" 
+                                                aria-valuenow="{{ insights.performance_metrics.on_time_performance * 100 }}" 
+                                                aria-valuemin="0" 
+                                                aria-valuemax="100"></div>
+                                        </div>
+                                        <small class="text-muted">{{ (insights.performance_metrics.on_time_performance * 100)|round(1) }}% of flights</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <h6 class="text-muted">Peak Hour</h6>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-clock-history text-warning me-2"></i>
+                                            <span>{{ insights.performance_metrics.peak_hour }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <h6 class="text-muted">Cancellation Rate</h6>
+                                        <span class="badge 
+                                            {% if insights.performance_metrics.cancellation_rate < 0.1 %}bg-success
+                                            {% elif insights.performance_metrics.cancellation_rate < 0.2 %}bg-warning
+                                            {% else %}bg-danger{% endif %}">
+                                            {{ (insights.performance_metrics.cancellation_rate * 100)|round(1) }}%
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Market Share -->
+                    <div class="card insight-card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary"><i class="bi bi-pie-chart me-2"></i>Airline Market Share</h5>
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
+                                            <i class="bi bi-trophy text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0 small text-muted">Top Airline</p>
+                                            <h4 class="mb-0">{{ insights.market_share.top_airline.name }}</h4>
+                                            <small class="text-muted">{{ insights.market_share.top_airline.share }} of flights</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    {% if insights.market_share.other_airlines %}
+                                    <h6 class="text-muted">Other Options:</h6>
+                                    <ul class="list-unstyled">
+                                        {% for airline in insights.market_share.other_airlines %}
+                                        <li class="mb-1">
+                                            <i class="bi bi-airplane-fill text-secondary me-2"></i>
+                                            {{ airline.name }} ({{ airline.share }})
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="card insight-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary"><i class="bi bi-lightbulb me-2"></i>Actionable Recommendations</h5>
+                            <div class="row">
+                                {% for recommendation in insights.recommendations %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="border p-3 h-100 rounded">
+                                        <h6 class="text-primary">{{ recommendation.category }}</h6>
+                                        <ul class="list-unstyled">
+                                            {% for suggestion in recommendation.suggestions %}
+                                            <li class="mb-2">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                {{ suggestion }}
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Predictive Insights -->
+                    {% if insights.predictive_insights %}
+                    <div class="card insight-card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary"><i class="bi bi-magic me-2"></i>Predictive Insights</h5>
+                            <div class="alert alert-light">
+                                <ul class="mb-0">
+                                    {% for insight in insights.predictive_insights %}
+                                    <li>{{ insight }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Flight Data Table -->
+                <div class="card border-0 shadow-sm mt-4">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h4 class="h5 mb-0"><i class="bi bi-table me-2"></i>Flight Details</h4>
+                        <span class="badge bg-primary rounded-pill">{{ flights|length }} flights</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th><i class="bi bi-airplane me-1"></i>Flight</th>
+                                        <th><i class="bi bi-building me-1"></i>Airline</th>
+                                        <th><i class="bi bi-arrow-up-right me-1"></i>Departure</th>
+                                        <th><i class="bi bi-arrow-down-left me-1"></i>Arrival</th>
+                                        <th><i class="bi bi-info-circle me-1"></i>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for flight in flights %}
+                                    <tr>
+                                        <td class="fw-bold">{{ flight.flight_number }}</td>
+                                        <td>{{ flight.airline }}</td>
+                                        <td>{{ flight.departure_time }}</td>
+                                        <td>{{ flight.arrival_time }}</td>
+                                        <td>
+                                            <span class="badge rounded-pill 
+                                                {% if flight.status == 'scheduled' %}bg-primary
+                                                {% elif flight.status == 'active' %}bg-success
+                                                {% elif flight.status == 'landed' %}bg-info
+                                                {% elif flight.status == 'cancelled' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ flight.status|title }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- No Results -->
+                <div class="alert alert-warning">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                        <div>
+                            <h4 class="alert-heading h5 mb-1">No Flights Found</h4>
+                            <p class="mb-0">We couldn't find any flights for this route and date. Please try a different search.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="text-center mt-4">
+                    <a href="/" class="btn btn-primary px-4">
+                        <i class="bi bi-arrow-left me-2"></i>Perform New Search
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

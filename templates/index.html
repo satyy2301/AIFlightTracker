@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white py-3">
+                <h2 class="h4 mb-0"><i class="bi bi-search me-2"></i>Flight Search</h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="/analyze" class="needs-validation" novalidate>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="origin" class="form-label fw-bold">Origin Airport</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                <input type="text" class="form-control" id="origin" name="origin" 
+                                       placeholder="SYD, LAX, JFK" required>
+                                <div class="invalid-feedback">
+                                    Please enter origin airport code
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="destination" class="form-label fw-bold">Destination Airport</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                                <input type="text" class="form-control" id="destination" name="destination" 
+                                       placeholder="MEL, SFO, LHR" required>
+                                <div class="invalid-feedback">
+                                    Please enter destination airport code
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="date" class="form-label fw-bold">Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                <input type="date" class="form-control" id="date" name="date" 
+                                       value="{{ date if date else '' }}" required>
+                                <div class="invalid-feedback">
+                                    Please select a date
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-lightning-charge me-2"></i>Analyze Flights
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow border-0 mt-4">
+            <div class="card-header bg-info text-white py-3">
+                <h3 class="h4 mb-0"><i class="bi bi-info-circle me-2"></i>How to Use</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="d-flex">
+                            <div class="me-3 text-primary">
+                                <i class="bi bi-1-circle-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="h6 mb-1">Enter Airport Codes</h5>
+                                <p class="small mb-0">Use IATA codes like SYD for Sydney or JFK for New York</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="d-flex">
+                            <div class="me-3 text-primary">
+                                <i class="bi bi-2-circle-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="h6 mb-1">Select Date</h5>
+                                <p class="small mb-0">Choose any date to analyze flight patterns</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex">
+                            <div class="me-3 text-primary">
+                                <i class="bi bi-3-circle-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="h6 mb-1">Get Insights</h5>
+                                <p class="small mb-0">Receive detailed analysis and visualizations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation
+(() => {
+  'use strict'
+  const forms = document.querySelectorAll('.needs-validation')
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+</script>
+{% endblock %}
